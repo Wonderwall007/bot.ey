@@ -5,7 +5,8 @@ from telethon.errors import SessionPasswordNeededError
 import logging
 import os
 import re
-
+from keep_alive import keep_alive
+keep_alive()
 # Configure logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
 
