@@ -14,8 +14,8 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 BOT_TOKEN = "8038156264:AAE6y8_i6hqcW849lmVtSahLplcxQTfCDos"
 
 # Telethon API credentials
-API_ID = 20222792
-API_HASH = '429d04a038cf62d91b3660e7794bf3c2'
+API_ID = 2040
+API_HASH = 'b18441a1ff607e10a989891a5462e627'
 
 # Create an instance of the Telegram Client for the bot
 application = Application.builder().token(BOT_TOKEN).build()
