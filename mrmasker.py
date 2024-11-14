@@ -104,7 +104,7 @@ user_data[user_id]['client'] = client
 await client.connect()
         
         # Send OTP request
-        try:
+       try:
             logging.debug(f'Sending OTP request to {text}')
             await client.send_code_request(text)
             logging.debug('OTP request sent')
