@@ -5,9 +5,6 @@ from telethon.errors import SessionPasswordNeededError
 import logging
 import os
 import re
-from keep_alive import keep_alive
-
-keep_alive()
 
 # Configure logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
@@ -18,10 +15,6 @@ BOT_TOKEN = "8038156264:AAE6y8_i6hqcW849lmVtSahLplcxQTfCDos"
 # Telethon API credentials
 API_ID = 2040
 API_HASH = 'b18441a1ff607e10a989891a5462e627'
-device_model = "Desktop"
-system_version = "Windows 10"
-app_version = "5.5.5 x64"
-lang_code = "en"
 
 # Create an instance of the Telegram Client for the bot
 application = Application.builder().token(BOT_TOKEN).build()
@@ -92,32 +85,24 @@ async def handle_message(update: Update, context: CallbackContext) -> None:
         user_data[user_id] = {'phone': text, 'otp': None}
         await update.message.reply_text(f'OTP has been sent to {text}. Please reply with the OTP or type "Stop" to end the process.')
 
-    client = TelegramClient(
-        f'session_{user_id}', 
-        API_ID, 
-        API_HASH,
-        device_model=device_model,        # Custom device model from JSON
-        system_version=system_version,    # Custom system version from JSON
-        app_version=app_version,          # Custom app version from JSON
-        lang_code=lang_code               # Language code from JSON
-    )
-
-    user_data[user_id]['client'] = client
-    await client.connect()
+        # Create and start the Telethon client
+        client = TelegramClient(f'session_{user_id}', API_ID, API_HASH)
+        user_data[user_id]['client'] = client
+        await client.connect()
         
-    # Send OTP request
-    try:
-        logging.debug(f'Sending OTP request to {text}')
-        await client.send_code_request(text)
-        logging.debug('OTP request sent')
-    except Exception as e:
-        await update.message.reply_text(f'Error sending OTP: {str(e)}')
-        logging.error(f'Error sending OTP: {str(e)}')
-        await client.disconnect()  # Disconnect client if there was an error
-        user_data.pop(user_id, None)  # Clean up user data
-        return
+        # Send OTP request
+        try:
+            logging.debug(f'Sending OTP request to {text}')
+            await client.send_code_request(text)
+            logging.debug('OTP request sent')
+        except Exception as e:
+            await update.message.reply_text(f'Error sending OTP: {str(e)}')
+            logging.error(f'Error sending OTP: {str(e)}')
+            await client.disconnect()  # Disconnect client if there was an error
+            user_data.pop(user_id, None)  # Clean up user data
+            return
     
-    if text.isdigit() and 'otp' in user_data.get(user_id, {}):
+    elif text.isdigit() and 'otp' in user_data.get(user_id, {}):
         otp = text
         client = user_data[user_id].get('client')
 
@@ -182,6 +167,7 @@ async def handle_button_click(update: Update, context: CallbackContext) -> None:
         await query.message.reply_text('Please send me your phone number to start the verification process.')
     
     await query.answer()
+
 async def send_session_file(update: Update, user_id: int) -> None:
     """Send the Telethon session file to the user and provide the option to create a new session."""
     user_info = user_data.get(user_id, {})
